@@ -1,0 +1,132 @@
+{\rtf1\ansi\ansicpg932\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="ja">\
+<head>\
+  <meta charset="UTF-8">\
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+  <title>\uc0\u33521 \u21336 \u35486 \u23398 \u32722 \u12450 \u12503 \u12522 </title>\
+  <script src="https://cdn.tailwindcss.com"></script>\
+</head>\
+<body class="bg-white text-black transition-colors duration-300 min-h-screen flex flex-col" id="app">\
+  <!-- \uc0\u12504 \u12483 \u12480 \u12540  -->\
+  <header class="flex justify-between items-center p-4 border-b">\
+    <h1 class="text-xl font-bold">\uc0\u33521 \u21336 \u35486 \u23398 \u32722 \u12450 \u12503 \u12522 </h1>\
+    <!-- \uc0\u12486 \u12540 \u12510 \u20999 \u12426 \u26367 \u12360 \u12508 \u12479 \u12531  -->\
+    <button \
+      id="toggleTheme" \
+      class="px-3 py-2 rounded-lg border shadow text-lg transition">\
+      \uc0\u55356 \u57113 \
+    </button>\
+  </header>\
+\
+  <!-- \uc0\u12467 \u12531 \u12486 \u12531 \u12484  -->\
+  <main class="flex-grow p-4 flex items-center justify-center">\
+    <div class="max-w-md w-full text-center">\
+      <div id="card" class="rounded-2xl shadow p-8 bg-gray-100 dark:bg-gray-800 transition">\
+        <p id="word" class="text-2xl font-bold">Loading...</p>\
+        <p id="meaning" class="mt-4 text-gray-700 dark:text-gray-300 hidden">\uc0\u65311 \u65311 \u65311 </p>\
+      </div>\
+\
+      <div class="flex justify-center gap-4 mt-6">\
+        <button id="showBtn" class="px-4 py-2 rounded-xl bg-yellow-500 text-white shadow hover:bg-yellow-600 transition">\
+          \uc0\u24847 \u21619 \u12434 \u34920 \u31034 \
+        </button>\
+        <button id="nextBtn" class="px-4 py-2 rounded-xl bg-blue-500 text-white shadow hover:bg-blue-600 transition">\
+          \uc0\u27425 \u12408 \
+        </button>\
+      </div>\
+    </div>\
+  </main>\
+\
+  <script>\
+    const app = document.getElementById('app');\
+    const toggleBtn = document.getElementById('toggleTheme');\
+    const wordEl = document.getElementById('word');\
+    const meaningEl = document.getElementById('meaning');\
+    const showBtn = document.getElementById('showBtn');\
+    const nextBtn = document.getElementById('nextBtn');\
+\
+    let words = [];\
+    let currentIndex = 0;\
+\
+    // --- \uc0\u12486 \u12540 \u12510 \u38306 \u36899  ---\
+    let savedTheme = localStorage.getItem('theme');\
+    let isDark;\
+\
+    if (savedTheme) \{\
+      isDark = savedTheme === 'dark';\
+    \} else \{\
+      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;\
+    \}\
+\
+    function applyTheme() \{\
+      if (isDark) \{\
+        app.classList.add('dark', 'bg-gray-900', 'text-white');\
+        app.classList.remove('bg-white', 'text-black');\
+        toggleBtn.textContent = '\uc0\u9728 \u65039 ';\
+      \} else \{\
+        app.classList.remove('dark', 'bg-gray-900', 'text-white');\
+        app.classList.add('bg-white', 'text-black');\
+        toggleBtn.textContent = '\uc0\u55356 \u57113 ';\
+      \}\
+    \}\
+    applyTheme();\
+\
+    toggleBtn.addEventListener('click', () => \{\
+      isDark = !isDark;\
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');\
+      applyTheme();\
+    \});\
+\
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => \{\
+      if (!localStorage.getItem('theme')) \{\
+        isDark = e.matches;\
+        applyTheme();\
+      \}\
+    \});\
+\
+    // --- \uc0\u21336 \u35486 \u34920 \u31034  ---\
+    function showWord() \{\
+      if (words.length === 0) return;\
+      const item = words[currentIndex];\
+      wordEl.textContent = item.en;\
+      meaningEl.textContent = item.ja;\
+      meaningEl.classList.add('hidden');\
+    \}\
+\
+    function nextWord() \{\
+      if (words.length === 0) return;\
+      currentIndex = (currentIndex + 1) % words.length;\
+      showWord();\
+    \}\
+\
+    showBtn.addEventListener('click', () => \{\
+      meaningEl.classList.remove('hidden');\
+    \});\
+\
+    nextBtn.addEventListener('click', () => \{\
+      nextWord();\
+    \});\
+\
+    // --- JSON\uc0\u35501 \u12415 \u36796 \u12415  ---\
+    fetch('words.json')\
+      .then(res => res.json())\
+      .then(data => \{\
+        words = data;\
+        currentIndex = 0;\
+        showWord();\
+      \})\
+      .catch(err => \{\
+        wordEl.textContent = "words.json \uc0\u12434 \u35501 \u12415 \u36796 \u12417 \u12414 \u12379 \u12435 \u12391 \u12375 \u12383 ";\
+        console.error(err);\
+      \});\
+  </script>\
+</body>\
+</html>\
+}
